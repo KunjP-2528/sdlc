@@ -54,8 +54,10 @@ public class TaskController {
 
     @GetMapping("/{taskId}")
     @Operation(summary = "Get a task by ID")
-    public ResponseEntity<TaskResponse> getTask(@PathVariable String taskId) {
-        TaskResponse response = taskService.getTask(taskId);
+    public ResponseEntity<TaskResponse> getTask(
+            @PathVariable String taskId,
+            @AuthenticationPrincipal UserPrincipal principal) {
+        TaskResponse response = taskService.getTask(taskId, principal.getUserId());
         return ResponseEntity.ok(response);
     }
 

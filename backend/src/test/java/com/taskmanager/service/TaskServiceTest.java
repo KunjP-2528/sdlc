@@ -72,7 +72,7 @@ class TaskServiceTest {
         Task task = createTestTask("task-1", "Test", "TODO", "HIGH", "user-123");
         when(taskRepository.findById("task-1")).thenReturn(Optional.of(task));
 
-        TaskResponse response = taskService.getTask("task-1");
+        TaskResponse response = taskService.getTask("task-1", "user-123");
 
         assertEquals("task-1", response.getId());
         assertEquals("Test", response.getTitle());
@@ -82,7 +82,24 @@ class TaskServiceTest {
     void getTask_shouldThrowWhenNotFound() {
         when(taskRepository.findById("nonexistent")).thenReturn(Optional.empty());
 
-        assertThrows(IllegalArgumentException.class, () -> taskService.getTask("nonexistent"));
+        assertThrows(IllegalArgumentException.class, () -> taskService.getTask("nonexistent", "user-1"));
+    }
+
+    @Test
+    void getTask_shouldThrowWhenNotAuthorized() {
+        Task task = createTestTask("task-1", "Test", "TODO", "HIGH", "user-1");
+        when(taskRepository.findById("task-1")).thenReturn(Optional.of(task));
+
+        assertThrows(SecurityException.class, () -> taskService.getTask("task-1", "user-other"));
+    }
+
+    @Test
+    void updateTask_shouldThrowWhenNotAuthorized() {
+        Task task = createTestTask("task-1", "Test", "TODO", "LOW", "user-1");
+        when(taskRepository.findById("task-1")).thenReturn(Optional.of(task));
+
+        TaskRequest request = new TaskRequest("Updated", null, null, null, null, null);
+        assertThrows(SecurityException.class, () -> taskService.updateTask("task-1", request, "user-other"));
     }
 
     @Test

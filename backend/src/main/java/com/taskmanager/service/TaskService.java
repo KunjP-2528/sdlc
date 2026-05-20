@@ -42,9 +42,14 @@ public class TaskService {
         return toResponse(task);
     }
 
-    public TaskResponse getTask(String taskId) {
+    public TaskResponse getTask(String taskId, String userId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found: " + taskId));
+
+        if (!userId.equals(task.getCreatorId()) && !userId.equals(task.getAssigneeId())) {
+            throw new SecurityException("Not authorized to view this task");
+        }
+
         return toResponse(task);
     }
 
@@ -62,6 +67,10 @@ public class TaskService {
     public TaskResponse updateTask(String taskId, TaskRequest request, String userId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found: " + taskId));
+
+        if (!userId.equals(task.getCreatorId()) && !userId.equals(task.getAssigneeId())) {
+            throw new SecurityException("Not authorized to update this task");
+        }
 
         if (request.getTitle() != null) {
             task.setTitle(request.getTitle());
@@ -92,7 +101,7 @@ public class TaskService {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new IllegalArgumentException("Task not found: " + taskId));
 
-        if (!task.getCreatorId().equals(userId) && !task.getAssigneeId().equals(userId)) {
+        if (!userId.equals(task.getCreatorId()) && !userId.equals(task.getAssigneeId())) {
             throw new SecurityException("Not authorized to delete this task");
         }
 
