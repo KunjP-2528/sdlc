@@ -1,0 +1,26 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: task-manager
+
+aws:
+  region: ${AWS_REGION:us-east-1}
+  dynamodb:
+    endpoint: ${DYNAMODB_ENDPOINT:}
+    table-prefix: ${DYNAMODB_TABLE_PREFIX:taskmanager}
+
+jwt:
+  secret: ${JWT_SECRET:c2VjdXJlLXRhc2stbWFuYWdlci1qd3Qtc2VjcmV0LWtleS1mb3ItcHJvZHVjdGlvbi11c2UtMjU2LWJpdHM=}
+  expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+
+cors:
+  allowed-origins: ${CORS_ORIGINS:http://localhost:3000}
